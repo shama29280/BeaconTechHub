@@ -62,9 +62,7 @@ const animateCounters = () => {
     const statNumbers = document.querySelectorAll('.stat-number');
     const statsSection = document.querySelector('.stats');
     
-    const observerOptions = {
-        threshold: 0.5
-    };
+    const observerOptions = { threshold: 0.5 };
 
     const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
@@ -73,7 +71,7 @@ const animateCounters = () => {
                 statNumbers.forEach(counter => {
                     const target = parseInt(counter.getAttribute('data-target'));
                     let current = 0;
-                    const increment = target / 50; // Divide into 50 steps
+                    const increment = target / 50;
                     
                     const updateCounter = () => {
                         current += increment;
@@ -97,7 +95,6 @@ const animateCounters = () => {
     }
 };
 
-// Initialize counters on page load
 document.addEventListener('DOMContentLoaded', animateCounters);
 
 // ========================================
@@ -110,10 +107,7 @@ const initializeCourseFiltering = () => {
 
     filterButtons.forEach(button => {
         button.addEventListener('click', () => {
-            // Remove active class from all buttons
             filterButtons.forEach(btn => btn.classList.remove('active'));
-            
-            // Add active class to clicked button
             button.classList.add('active');
             
             const filterValue = button.getAttribute('data-filter');
@@ -122,23 +116,16 @@ const initializeCourseFiltering = () => {
                 if (filterValue === 'all') {
                     card.classList.remove('hide');
                     card.style.display = 'block';
-                    // Trigger animation
-                    setTimeout(() => {
-                        card.style.opacity = '1';
-                    }, 10);
+                    setTimeout(() => { card.style.opacity = '1'; }, 10);
                 } else {
                     if (card.getAttribute('data-category') === filterValue) {
                         card.classList.remove('hide');
                         card.style.display = 'block';
-                        setTimeout(() => {
-                            card.style.opacity = '1';
-                        }, 10);
+                        setTimeout(() => { card.style.opacity = '1'; }, 10);
                     } else {
                         card.classList.add('hide');
                         card.style.opacity = '0';
-                        setTimeout(() => {
-                            card.style.display = 'none';
-                        }, 300);
+                        setTimeout(() => { card.style.display = 'none'; }, 300);
                     }
                 }
             });
@@ -149,61 +136,23 @@ const initializeCourseFiltering = () => {
 document.addEventListener('DOMContentLoaded', initializeCourseFiltering);
 
 // ========================================
-// FORM SUBMISSION HANDLING
+// FORMSPREE CONTACT FORM (NO LOCAL SERVER)
 // ========================================
 
-const initializeFormHandling = () => {
+const initializeFormspreeForm = () => {
     const contactForm = document.getElementById('contactForm');
 
     if (contactForm) {
-        contactForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-
-            const name = document.getElementById('name').value.trim();
-            const email = document.getElementById('email').value.trim();
-            const message = document.getElementById('message').value.trim();
-
-            // validation
-            if (!name || !email || !message) {
-                alert('Please fill in all fields');
-                return;
-            }
-
-            if (!isValidEmail(email)) {
-                alert('Please enter a valid email address');
-                return;
-            }
-
-            try {
-                const res = await fetch("http://localhost:5000/contact", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({ name, email, message })
-                });
-
-                const data = await res.json();
-
-                alert(data.message);   // message from backend
-                contactForm.reset();
-
-            } catch (error) {
-                console.error(error);
-                alert("Cannot connect to server ❌");
-            }
+        contactForm.addEventListener('submit', (e) => {
+            // Remove any local JS handling
+            // Form will submit directly to Formspree
+            // Optionally, show a simple alert
+            alert('Form submitted! Check your Formspree inbox.');
         });
     }
 };
 
-
-// Email validation function
-const isValidEmail = (email) => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
-};
-
-document.addEventListener('DOMContentLoaded', initializeFormHandling);
+document.addEventListener('DOMContentLoaded', initializeFormspreeForm);
 
 // ========================================
 // SCROLL ANIMATIONS FOR ELEMENTS
@@ -224,14 +173,11 @@ const initializeScrollAnimations = () => {
         });
     }, observerOptions);
 
-    // Observe all course cards, team cards, and project cards
     const elementsToObserve = document.querySelectorAll(
         '.course-card, .team-card, .project-card, .stat-card, .mission-card'
     );
 
-    elementsToObserve.forEach(el => {
-        observer.observe(el);
-    });
+    elementsToObserve.forEach(el => observer.observe(el));
 };
 
 document.addEventListener('DOMContentLoaded', initializeScrollAnimations);
@@ -240,19 +186,15 @@ document.addEventListener('DOMContentLoaded', initializeScrollAnimations);
 // NAVBAR SCROLL EFFECT
 // ========================================
 
-let lastScrollPosition = 0;
 const navbar = document.querySelector('.navbar');
 
 window.addEventListener('scroll', () => {
     const currentScroll = window.pageYOffset;
-
     if (currentScroll > 100) {
         navbar.style.boxShadow = '0 4px 16px rgba(0, 0, 0, 0.12)';
     } else {
         navbar.style.boxShadow = '0 2px 8px rgba(0, 0, 0, 0.1)';
     }
-
-    lastScrollPosition = currentScroll;
 });
 
 // ========================================
@@ -263,15 +205,12 @@ const highlightActiveNavLink = () => {
     const sections = document.querySelectorAll('section');
     const navLinks = document.querySelectorAll('.nav-link');
 
-    const observerOptions = {
-        threshold: 0.4
-    };
+    const observerOptions = { threshold: 0.4 };
 
     const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
                 const currentId = entry.target.getAttribute('id');
-                
                 navLinks.forEach(link => {
                     link.classList.remove('active');
                     if (link.getAttribute('href') === `#${currentId}`) {
@@ -282,49 +221,15 @@ const highlightActiveNavLink = () => {
         });
     }, observerOptions);
 
-    sections.forEach(section => {
-        observer.observe(section);
-    });
+    sections.forEach(section => observer.observe(section));
 };
 
 document.addEventListener('DOMContentLoaded', highlightActiveNavLink);
 
 // ========================================
-// UTILITY: SEND FORM DATA (Optional Backend)
+// LAZY LOAD IMAGES
 // ========================================
 
-/*
-const sendFormData = async (name, email, message) => {
-    try {
-        const response = await fetch('/api/contact', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                name: name,
-                email: email,
-                message: message,
-                timestamp: new Date().toISOString()
-            })
-        });
-
-        if (response.ok) {
-            console.log('Message sent successfully');
-        } else {
-            console.error('Failed to send message');
-        }
-    } catch (error) {
-        console.error('Error sending message:', error);
-    }
-};
-*/
-
-// ========================================
-// PERFORMANCE OPTIMIZATIONS
-// ========================================
-
-// Lazy load images (if you add images)
 const initializeLazyLoading = () => {
     if ('IntersectionObserver' in window) {
         const imageObserver = new IntersectionObserver((entries, observer) => {
@@ -347,29 +252,7 @@ const initializeLazyLoading = () => {
 document.addEventListener('DOMContentLoaded', initializeLazyLoading);
 
 // ========================================
-// INITIALIZATION
-// ========================================
-
-document.addEventListener('DOMContentLoaded', () => {
-    // All initialization functions are called
-    console.log('Beacon Tech Hub - Loaded Successfully');
-});
-
-// ========================================
-// MOBILE PERFORMANCE
-// ========================================
-
-// Disable animations on low-power devices
-const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-if (prefersReducedMotion) {
-    document.documentElement.style.scrollBehavior = 'auto';
-}
-
-
-
-// ========================================
-// header SLIDER FUNCTIONALITY
+// HEADER SLIDER
 // ========================================
 
 const slides = document.querySelectorAll('.slide');
@@ -392,15 +275,18 @@ function nextSlide() {
 }
 
 dots.forEach((dot, index) => {
-    dot.addEventListener('click', () => {
-        showSlide(index);
-    });
+    dot.addEventListener('click', () => showSlide(index));
 });
 
 setInterval(nextSlide, slideInterval);
 
+// ========================================
+// INITIALIZATION LOG
+// ========================================
 
-
+document.addEventListener('DOMContentLoaded', () => {
+    console.log('Beacon Tech Hub - Loaded Successfully');
+});
 
 // ========================================
 // END OF SCRIPT
