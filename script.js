@@ -21,16 +21,16 @@ if (hamburger) {
 const navLinks = document.querySelectorAll('.nav-link');
 navLinks.forEach(link => {
     link.addEventListener('click', () => {
-        if (hamburger) hamburger.classList.remove('active');
-        if (navMenu) navMenu.classList.remove('active');
+        hamburger.classList.remove('active');
+        navMenu.classList.remove('active');
     });
 });
 
 // Close menu when clicking outside
 document.addEventListener('click', (e) => {
     if (!e.target.closest('.nav-container')) {
-        if (hamburger) hamburger.classList.remove('active');
-        if (navMenu) navMenu.classList.remove('active');
+        hamburger.classList.remove('active');
+        navMenu.classList.remove('active');
     }
 });
 
@@ -62,18 +62,19 @@ const animateCounters = () => {
     const statNumbers = document.querySelectorAll('.stat-number');
     const statsSection = document.querySelector('.stats');
     
-    const observerOptions = { threshold: 0.5 };
+    const observerOptions = {
+        threshold: 0.5
+    };
 
     const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             if (entry.isIntersecting && !entry.target.classList.contains('animated')) {
                 entry.target.classList.add('animated');
-
                 statNumbers.forEach(counter => {
                     const target = parseInt(counter.getAttribute('data-target'));
                     let current = 0;
-                    const increment = target / 50;
-
+                    const increment = target / 50; // Divide into 50 steps
+                    
                     const updateCounter = () => {
                         current += increment;
                         if (current < target) {
@@ -83,18 +84,20 @@ const animateCounters = () => {
                             counter.textContent = target + '+';
                         }
                     };
-
+                    
                     updateCounter();
                 });
-
                 observer.unobserve(entry.target);
             }
         });
     }, observerOptions);
 
-    if (statsSection) observer.observe(statsSection);
+    if (statsSection) {
+        observer.observe(statsSection);
+    }
 };
 
+// Initialize counters on page load
 document.addEventListener('DOMContentLoaded', animateCounters);
 
 // ========================================
@@ -107,20 +110,36 @@ const initializeCourseFiltering = () => {
 
     filterButtons.forEach(button => {
         button.addEventListener('click', () => {
+            // Remove active class from all buttons
             filterButtons.forEach(btn => btn.classList.remove('active'));
+            
+            // Add active class to clicked button
             button.classList.add('active');
-
+            
             const filterValue = button.getAttribute('data-filter');
 
             courseCards.forEach(card => {
-                if (filterValue === 'all' || card.getAttribute('data-category') === filterValue) {
+                if (filterValue === 'all') {
                     card.classList.remove('hide');
                     card.style.display = 'block';
-                    setTimeout(() => card.style.opacity = '1', 10);
+                    // Trigger animation
+                    setTimeout(() => {
+                        card.style.opacity = '1';
+                    }, 10);
                 } else {
-                    card.classList.add('hide');
-                    card.style.opacity = '0';
-                    setTimeout(() => card.style.display = 'none', 300);
+                    if (card.getAttribute('data-category') === filterValue) {
+                        card.classList.remove('hide');
+                        card.style.display = 'block';
+                        setTimeout(() => {
+                            card.style.opacity = '1';
+                        }, 10);
+                    } else {
+                        card.classList.add('hide');
+                        card.style.opacity = '0';
+                        setTimeout(() => {
+                            card.style.display = 'none';
+                        }, 300);
+                    }
                 }
             });
         });
@@ -130,40 +149,7 @@ const initializeCourseFiltering = () => {
 document.addEventListener('DOMContentLoaded', initializeCourseFiltering);
 
 // ========================================
-// EMAIL VALIDATION
-// ========================================
-
-const isValidEmail = (email) => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
-};
-
-// ========================================
-// POPUP FUNCTION
-// ========================================
-
-function showPopup(message) {
-    const popup = document.createElement("div");
-    popup.innerText = message;
-
-    popup.style.position = "fixed";
-    popup.style.top = "20px";
-    popup.style.right = "20px";
-    popup.style.background = "#111";
-    popup.style.color = "#fff";
-    popup.style.padding = "15px 20px";
-    popup.style.borderRadius = "8px";
-    popup.style.boxShadow = "0 5px 20px rgba(0,0,0,0.3)";
-    popup.style.zIndex = "9999";
-    popup.style.fontSize = "14px";
-
-    document.body.appendChild(popup);
-
-    setTimeout(() => popup.remove(), 3000);
-}
-
-// ========================================
-// FORM SUBMISSION HANDLING (UPDATED)
+// FORM SUBMISSION HANDLING
 // ========================================
 
 const initializeFormHandling = () => {
@@ -177,45 +163,50 @@ const initializeFormHandling = () => {
             const email = document.getElementById('email').value.trim();
             const message = document.getElementById('message').value.trim();
 
+            // validation
             if (!name || !email || !message) {
-                showPopup("Please fill in all fields.");
+                alert('Please fill in all fields');
                 return;
             }
 
             if (!isValidEmail(email)) {
-                showPopup("Please enter a valid email address.");
+                alert('Please enter a valid email address');
                 return;
             }
 
             try {
-                const res = await fetch("https://formspree.io/f/YOUR_FORM_ID", {  // change id
+                const res = await fetch("http://localhost:5000/contact", {
                     method: "POST",
                     headers: {
-                        "Content-Type": "application/json",
-                        "Accept": "application/json"
+                        "Content-Type": "application/json"
                     },
                     body: JSON.stringify({ name, email, message })
                 });
 
-                if (res.ok) {
-                    showPopup("✅ Thank you! Message sent successfully.");
-                    contactForm.reset();
-                } else {
-                    showPopup("❌ Something went wrong.");
-                }
+                const data = await res.json();
+
+                alert(data.message);   // message from backend
+                contactForm.reset();
 
             } catch (error) {
                 console.error(error);
-                showPopup("❌ Cannot connect to server.");
+                alert("Cannot connect to server ❌");
             }
         });
     }
 };
 
+
+// Email validation function
+const isValidEmail = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+};
+
 document.addEventListener('DOMContentLoaded', initializeFormHandling);
 
 // ========================================
-// SCROLL ANIMATIONS
+// SCROLL ANIMATIONS FOR ELEMENTS
 // ========================================
 
 const initializeScrollAnimations = () => {
@@ -233,11 +224,14 @@ const initializeScrollAnimations = () => {
         });
     }, observerOptions);
 
+    // Observe all course cards, team cards, and project cards
     const elementsToObserve = document.querySelectorAll(
         '.course-card, .team-card, .project-card, .stat-card, .mission-card'
     );
 
-    elementsToObserve.forEach(el => observer.observe(el));
+    elementsToObserve.forEach(el => {
+        observer.observe(el);
+    });
 };
 
 document.addEventListener('DOMContentLoaded', initializeScrollAnimations);
@@ -246,11 +240,10 @@ document.addEventListener('DOMContentLoaded', initializeScrollAnimations);
 // NAVBAR SCROLL EFFECT
 // ========================================
 
+let lastScrollPosition = 0;
 const navbar = document.querySelector('.navbar');
 
 window.addEventListener('scroll', () => {
-    if (!navbar) return;
-
     const currentScroll = window.pageYOffset;
 
     if (currentScroll > 100) {
@@ -258,23 +251,27 @@ window.addEventListener('scroll', () => {
     } else {
         navbar.style.boxShadow = '0 2px 8px rgba(0, 0, 0, 0.1)';
     }
+
+    lastScrollPosition = currentScroll;
 });
 
 // ========================================
-// ACTIVE NAV LINK
+// ACTIVE NAV LINK HIGHLIGHTING
 // ========================================
 
 const highlightActiveNavLink = () => {
     const sections = document.querySelectorAll('section');
     const navLinks = document.querySelectorAll('.nav-link');
 
-    const observerOptions = { threshold: 0.4 };
+    const observerOptions = {
+        threshold: 0.4
+    };
 
     const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
                 const currentId = entry.target.getAttribute('id');
-
+                
                 navLinks.forEach(link => {
                     link.classList.remove('active');
                     if (link.getAttribute('href') === `#${currentId}`) {
@@ -285,18 +282,52 @@ const highlightActiveNavLink = () => {
         });
     }, observerOptions);
 
-    sections.forEach(section => observer.observe(section));
+    sections.forEach(section => {
+        observer.observe(section);
+    });
 };
 
 document.addEventListener('DOMContentLoaded', highlightActiveNavLink);
 
 // ========================================
-// LAZY LOADING
+// UTILITY: SEND FORM DATA (Optional Backend)
 // ========================================
 
+/*
+const sendFormData = async (name, email, message) => {
+    try {
+        const response = await fetch('/api/contact', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                name: name,
+                email: email,
+                message: message,
+                timestamp: new Date().toISOString()
+            })
+        });
+
+        if (response.ok) {
+            console.log('Message sent successfully');
+        } else {
+            console.error('Failed to send message');
+        }
+    } catch (error) {
+        console.error('Error sending message:', error);
+    }
+};
+*/
+
+// ========================================
+// PERFORMANCE OPTIMIZATIONS
+// ========================================
+
+// Lazy load images (if you add images)
 const initializeLazyLoading = () => {
     if ('IntersectionObserver' in window) {
-        const imageObserver = new IntersectionObserver((entries) => {
+        const imageObserver = new IntersectionObserver((entries, observer) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
                     const img = entry.target;
@@ -320,6 +351,7 @@ document.addEventListener('DOMContentLoaded', initializeLazyLoading);
 // ========================================
 
 document.addEventListener('DOMContentLoaded', () => {
+    // All initialization functions are called
     console.log('Beacon Tech Hub - Loaded Successfully');
 });
 
@@ -327,14 +359,17 @@ document.addEventListener('DOMContentLoaded', () => {
 // MOBILE PERFORMANCE
 // ========================================
 
+// Disable animations on low-power devices
 const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 if (prefersReducedMotion) {
     document.documentElement.style.scrollBehavior = 'auto';
 }
 
+
+
 // ========================================
-// HEADER SLIDER
+// header SLIDER FUNCTIONALITY
 // ========================================
 
 const slides = document.querySelectorAll('.slide');
@@ -346,24 +381,26 @@ const slideInterval = 5000;
 function showSlide(index) {
     slides.forEach((slide, i) => {
         slide.classList.toggle('active', i === index);
-        if (dots[i]) dots[i].classList.toggle('active', i === index);
+        dots[i].classList.toggle('active', i === index);
     });
     currentSlide = index;
 }
 
 function nextSlide() {
-    if (slides.length === 0) return;
     let next = (currentSlide + 1) % slides.length;
     showSlide(next);
 }
 
 dots.forEach((dot, index) => {
-    dot.addEventListener('click', () => showSlide(index));
+    dot.addEventListener('click', () => {
+        showSlide(index);
+    });
 });
 
-if (slides.length > 0) {
-    setInterval(nextSlide, slideInterval);
-}
+setInterval(nextSlide, slideInterval);
+
+
+
 
 // ========================================
 // END OF SCRIPT
