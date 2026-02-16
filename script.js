@@ -1,293 +1,76 @@
-/* ========================================
-   BEACON TECH HUB - JAVASCRIPT
-   Interactive features and functionality
-   ======================================== */
-
 // ========================================
-// HAMBURGER MENU TOGGLE
+// FORM SUBMISSION HANDLING (FORMSPREE)
 // ========================================
 
-const hamburger = document.getElementById('hamburger');
-const navMenu = document.getElementById('navMenu');
+const initializeFormHandling = () => {
+    const contactForm = document.getElementById("contactForm");
 
-if (hamburger) {
-    hamburger.addEventListener('click', () => {
-        hamburger.classList.toggle('active');
-        navMenu.classList.toggle('active');
-    });
-}
+    if (!contactForm) return;
 
-// Close menu when a link is clicked
-const navLinks = document.querySelectorAll('.nav-link');
-navLinks.forEach(link => {
-    link.addEventListener('click', () => {
-        hamburger.classList.remove('active');
-        navMenu.classList.remove('active');
-    });
-});
+    contactForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
 
-// Close menu when clicking outside
-document.addEventListener('click', (e) => {
-    if (!e.target.closest('.nav-container')) {
-        hamburger.classList.remove('active');
-        navMenu.classList.remove('active');
-    }
-});
+        const name = document.getElementById("name").value.trim();
+        const email = document.getElementById("email").value.trim();
+        const message = document.getElementById("message").value.trim();
 
-// ========================================
-// SMOOTH SCROLLING FOR NAVIGATION
-// ========================================
+        if (!name || !email || !message) {
+            showPopup("Please fill all fields.");
+            return;
+        }
 
-document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-    anchor.addEventListener('click', function (e) {
-        const href = this.getAttribute('href');
-        if (href !== '#') {
-            e.preventDefault();
-            const target = document.querySelector(href);
-            if (target) {
-                target.scrollIntoView({
-                    behavior: 'smooth',
-                    block: 'start'
-                });
+        if (!isValidEmail(email)) {
+            showPopup("Enter a valid email address.");
+            return;
+        }
+
+        try {
+            const response = await fetch("https://formspree.io/f/YOUR_ID", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ name, email, message })
+            });
+
+            if (response.ok) {
+                showPopup("✅ Thank you! Your message has been sent successfully.");
+                contactForm.reset();
+            } else {
+                showPopup("❌ Something went wrong. Please try again.");
             }
+
+        } catch (error) {
+            console.error(error);
+            showPopup("❌ Network error. Try again later.");
         }
     });
-});
-
-// ========================================
-// ANIMATED COUNTERS
-// ========================================
-
-const animateCounters = () => {
-    const statNumbers = document.querySelectorAll('.stat-number');
-    const statsSection = document.querySelector('.stats');
-    
-    const observerOptions = { threshold: 0.5 };
-
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting && !entry.target.classList.contains('animated')) {
-                entry.target.classList.add('animated');
-                statNumbers.forEach(counter => {
-                    const target = parseInt(counter.getAttribute('data-target'));
-                    let current = 0;
-                    const increment = target / 50;
-                    
-                    const updateCounter = () => {
-                        current += increment;
-                        if (current < target) {
-                            counter.textContent = Math.floor(current) + '+';
-                            setTimeout(updateCounter, 30);
-                        } else {
-                            counter.textContent = target + '+';
-                        }
-                    };
-                    
-                    updateCounter();
-                });
-                observer.unobserve(entry.target);
-            }
-        });
-    }, observerOptions);
-
-    if (statsSection) {
-        observer.observe(statsSection);
-    }
 };
 
-document.addEventListener('DOMContentLoaded', animateCounters);
+document.addEventListener("DOMContentLoaded", initializeFormHandling);
 
-// ========================================
-// COURSE FILTERING
-// ========================================
 
-const initializeCourseFiltering = () => {
-    const filterButtons = document.querySelectorAll('.filter-btn');
-    const courseCards = document.querySelectorAll('.course-card');
-
-    filterButtons.forEach(button => {
-        button.addEventListener('click', () => {
-            filterButtons.forEach(btn => btn.classList.remove('active'));
-            button.classList.add('active');
-            
-            const filterValue = button.getAttribute('data-filter');
-
-            courseCards.forEach(card => {
-                if (filterValue === 'all') {
-                    card.classList.remove('hide');
-                    card.style.display = 'block';
-                    setTimeout(() => { card.style.opacity = '1'; }, 10);
-                } else {
-                    if (card.getAttribute('data-category') === filterValue) {
-                        card.classList.remove('hide');
-                        card.style.display = 'block';
-                        setTimeout(() => { card.style.opacity = '1'; }, 10);
-                    } else {
-                        card.classList.add('hide');
-                        card.style.opacity = '0';
-                        setTimeout(() => { card.style.display = 'none'; }, 300);
-                    }
-                }
-            });
-        });
-    });
+// Email validation
+const isValidEmail = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
 };
 
-document.addEventListener('DOMContentLoaded', initializeCourseFiltering);
 
-// ========================================
-// FORMSPREE CONTACT FORM (NO LOCAL SERVER)
-// ========================================
+// Simple professional popup
+function showPopup(message) {
+    const popup = document.createElement("div");
+    popup.innerText = message;
 
-const initializeFormspreeForm = () => {
-    const contactForm = document.getElementById('contactForm');
+    popup.style.position = "fixed";
+    popup.style.bottom = "20px";
+    popup.style.right = "20px";
+    popup.style.background = "#111";
+    popup.style.color = "#fff";
+    popup.style.padding = "12px 18px";
+    popup.style.borderRadius = "8px";
+    popup.style.boxShadow = "0 5px 20px rgba(0,0,0,0.2)";
+    popup.style.zIndex = "9999";
 
-    if (contactForm) {
-        contactForm.addEventListener('submit', (e) => {
-            // Remove any local JS handling
-            // Form will submit directly to Formspree
-            // Optionally, show a simple alert
-            alert('Form submitted! Check your Formspree inbox.');
-        });
-    }
-};
+    document.body.appendChild(popup);
 
-document.addEventListener('DOMContentLoaded', initializeFormspreeForm);
-
-// ========================================
-// SCROLL ANIMATIONS FOR ELEMENTS
-// ========================================
-
-const initializeScrollAnimations = () => {
-    const observerOptions = {
-        threshold: 0.1,
-        rootMargin: '0px 0px -100px 0px'
-    };
-
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.style.animation = 'fadeInUp 0.6s ease-out forwards';
-                observer.unobserve(entry.target);
-            }
-        });
-    }, observerOptions);
-
-    const elementsToObserve = document.querySelectorAll(
-        '.course-card, .team-card, .project-card, .stat-card, .mission-card'
-    );
-
-    elementsToObserve.forEach(el => observer.observe(el));
-};
-
-document.addEventListener('DOMContentLoaded', initializeScrollAnimations);
-
-// ========================================
-// NAVBAR SCROLL EFFECT
-// ========================================
-
-const navbar = document.querySelector('.navbar');
-
-window.addEventListener('scroll', () => {
-    const currentScroll = window.pageYOffset;
-    if (currentScroll > 100) {
-        navbar.style.boxShadow = '0 4px 16px rgba(0, 0, 0, 0.12)';
-    } else {
-        navbar.style.boxShadow = '0 2px 8px rgba(0, 0, 0, 0.1)';
-    }
-});
-
-// ========================================
-// ACTIVE NAV LINK HIGHLIGHTING
-// ========================================
-
-const highlightActiveNavLink = () => {
-    const sections = document.querySelectorAll('section');
-    const navLinks = document.querySelectorAll('.nav-link');
-
-    const observerOptions = { threshold: 0.4 };
-
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                const currentId = entry.target.getAttribute('id');
-                navLinks.forEach(link => {
-                    link.classList.remove('active');
-                    if (link.getAttribute('href') === `#${currentId}`) {
-                        link.classList.add('active');
-                    }
-                });
-            }
-        });
-    }, observerOptions);
-
-    sections.forEach(section => observer.observe(section));
-};
-
-document.addEventListener('DOMContentLoaded', highlightActiveNavLink);
-
-// ========================================
-// LAZY LOAD IMAGES
-// ========================================
-
-const initializeLazyLoading = () => {
-    if ('IntersectionObserver' in window) {
-        const imageObserver = new IntersectionObserver((entries, observer) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    const img = entry.target;
-                    img.src = img.dataset.src;
-                    img.classList.remove('lazy');
-                    imageObserver.unobserve(img);
-                }
-            });
-        });
-
-        document.querySelectorAll('img.lazy').forEach(img => {
-            imageObserver.observe(img);
-        });
-    }
-};
-
-document.addEventListener('DOMContentLoaded', initializeLazyLoading);
-
-// ========================================
-// HEADER SLIDER
-// ========================================
-
-const slides = document.querySelectorAll('.slide');
-const dots = document.querySelectorAll('.dot');
-
-let currentSlide = 0;
-const slideInterval = 5000;
-
-function showSlide(index) {
-    slides.forEach((slide, i) => {
-        slide.classList.toggle('active', i === index);
-        dots[i].classList.toggle('active', i === index);
-    });
-    currentSlide = index;
+    setTimeout(() => popup.remove(), 3000);
 }
-
-function nextSlide() {
-    let next = (currentSlide + 1) % slides.length;
-    showSlide(next);
-}
-
-dots.forEach((dot, index) => {
-    dot.addEventListener('click', () => showSlide(index));
-});
-
-setInterval(nextSlide, slideInterval);
-
-// ========================================
-// INITIALIZATION LOG
-// ========================================
-
-document.addEventListener('DOMContentLoaded', () => {
-    console.log('Beacon Tech Hub - Loaded Successfully');
-});
-
-// ========================================
-// END OF SCRIPT
-// ========================================
