@@ -1367,18 +1367,3 @@ a:hover {
     justify-content: center;
 }
 
-.popup-btn{
-    margin-top: 15px;
-    padding: 10px 20px;
-    border-radius: 30px;
-    border: none;
-    cursor: pointer;
-    font-weight: 600;
-    color: white;
-    background: linear-gradient(135deg,#ff9800,#ff6b35);
-}
-
-@keyframes popupFade{
-    from{transform:scale(0.9);opacity:0;}
-    to{transform:scale(1);opacity:1;}
-}
