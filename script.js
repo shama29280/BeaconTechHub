@@ -345,5 +345,32 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // ========================================
+// IMAGE PROTECTION (client-side)
+// Lightweight handlers to discourage right-click and drag
+// These are friendly, non-destructive measures — do not
+// rely on them for true DRM; users can still screenshot.
+// Compatible with GitHub Pages (static JS) and any domain.
+// ========================================
+
+function initializeImageProtection() {
+    const imgs = document.querySelectorAll('.image-protect img, img.protected-image');
+    if (!imgs.length) return;
+
+    imgs.forEach(img => {
+        img.addEventListener('contextmenu', (e) => { e.preventDefault(); });
+        img.addEventListener('dragstart', (e) => { e.preventDefault(); });
+    });
+
+    // capture at document level as a fallback for clicks that land on child elements
+    document.addEventListener('contextmenu', (e) => {
+        if (e.target && e.target.closest && e.target.closest('.image-protect')) {
+            e.preventDefault();
+        }
+    }, true);
+}
+
+document.addEventListener('DOMContentLoaded', initializeImageProtection);
+
+// ========================================
 // END OF SCRIPT
 // ========================================

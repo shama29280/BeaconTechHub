@@ -1578,3 +1578,36 @@ img {
     justify-content: center;
 }
 
+/* ========================================
+   IMAGE PROTECTION
+   Lightweight client-side measures to
+   discourage right-clicking, dragging, and
+   basic long-press downloads on instructor images.
+   Note: Nothing on the web fully prevents saving
+   (users can still screenshot or inspect), but these
+   steps raise the bar for casual downloads.
+   ======================================== */
+
+.image-protect img {
+    -webkit-user-drag: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    -webkit-touch-callout: none; /* iOS Safari long-press */
+}
+
+.image-protect {
+    /* keeps layout identical while signalling protection */
+    position: relative;
+}
+
+/* Optional helper class if you want to style a protective overlay later */
+.image-protect--overlay::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: transparent;
+    z-index: 2;
+    pointer-events: auto;
+}
+
