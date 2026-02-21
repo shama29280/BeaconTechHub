@@ -142,14 +142,53 @@ document.addEventListener('DOMContentLoaded', initializeCourseFiltering);
 const initializeFormspreeForm = () => {
     const contactForm = document.getElementById('contactForm');
 
-    if (contactForm) {
-        contactForm.addEventListener('submit', (e) => {
-            // Remove any local JS handling
-            // Form will submit directly to Formspree
-            // Optionally, show a simple alert
-            alert('Form submitted! Check your Formspree inbox.');
-        });
-    }
+    if (!contactForm) return;
+
+    // helper to show inline messages inside .contact-form
+    const showFormMessage = (formContainer, message, type = 'success') => {
+        let msg = formContainer.querySelector('.form-message');
+        if (!msg) {
+            msg = document.createElement('div');
+            msg.className = 'form-message';
+            formContainer.prepend(msg);
+        }
+        msg.textContent = message;
+        msg.classList.remove('success', 'error');
+        msg.classList.add(type, 'is-visible');
+    };
+
+    contactForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const formContainer = contactForm.closest('.contact-form') || contactForm.parentElement;
+
+        const submitBtn = contactForm.querySelector('[type="submit"]');
+        if (submitBtn) submitBtn.classList.add('loading');
+
+        const formData = new FormData(contactForm);
+
+        try {
+            const response = await fetch(contactForm.action, {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json'
+                },
+                body: formData
+            });
+
+            if (response.ok) {
+                showFormMessage(formContainer, 'Thanks! Your message was sent successfully. We will contact you soon.', 'success');
+                contactForm.reset();
+            } else {
+                const data = await response.json().catch(() => ({}));
+                const errMsg = (data && data.error) ? data.error : 'Unable to send message right now. Please try again later.';
+                showFormMessage(formContainer, errMsg, 'error');
+            }
+        } catch (err) {
+            showFormMessage(formContainer, 'Network error — please check your connection and try again.', 'error');
+        } finally {
+            if (submitBtn) submitBtn.classList.remove('loading');
+        }
+    });
 };
 
 document.addEventListener('DOMContentLoaded', initializeFormspreeForm);
@@ -279,6 +318,23 @@ dots.forEach((dot, index) => {
 });
 
 setInterval(nextSlide, slideInterval);
+
+// ========================================
+// Apply per-card background images when `data-bg` or `--bg-image` is used
+// Usage:
+// 1) Add `has-bg` and an inline CSS variable: `<div class="course-card has-bg" style="--bg-image: url('path')">`
+// 2) Or add `data-bg="path"` and the helper will set `--bg-image` and `has-bg` automatically.
+const applyCourseCardBackgrounds = () => {
+    document.querySelectorAll('.course-card[data-bg]').forEach(card => {
+        const url = card.getAttribute('data-bg');
+        if (url) {
+            card.style.setProperty('--bg-image', `url('${url}')`);
+            card.classList.add('has-bg');
+        }
+    });
+};
+
+document.addEventListener('DOMContentLoaded', applyCourseCardBackgrounds);
 
 // ========================================
 // INITIALIZATION LOG
