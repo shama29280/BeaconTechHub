@@ -1488,6 +1488,52 @@ img {
 
 }
 /* UTILITY CLASSES */
+@media (max-width: 768px) {
+    /* Compact header */
+    .navbar { padding: 0.45rem 0; }
+    .nav-container { padding: 0 1rem; }
+    .nav-logo { font-size: 1.05rem; }
+    .logo-icon { width: 32px; height: 32px; background-size: contain; }
+    .nav-menu { gap: 1rem; top: 58px; padding: 0.75rem 0; }
+    .nav-link { font-size: 0.95rem; }
+
+    /* Compact hero */
+    .hero-slider { height: clamp(220px, 36vh, 420px); }
+    .hero-content { top: 58%; padding: 0 0.75rem; }
+    .hero-title { font-size: clamp(1.25rem, 5vw, 2rem); margin-bottom: 8px; }
+    .hero-subtitle { font-size: clamp(0.8rem, 2.4vw, 1rem); max-width: 95%; }
+    .slider-dots { bottom: 18px; gap: 8px; }
+
+    /* Buttons smaller and tighter */
+    .btn { padding: 0.45rem 0.9rem; border-radius: 0.6rem; font-size: 0.95rem; }
+    .cta-btn, .btn-primary, .btn-secondary { padding: 0.45rem 0.9rem; border-radius: 0.6rem; }
+
+    /* Cards & grids */
+    .stat-card { padding: 1rem; border-radius: 0.6rem; }
+    .stat-number { font-size: 2rem; }
+    .mission-card, .project-card, .course-card, .team-card { padding: 0.9rem; border-radius: 0.5rem; }
+    .course-card { padding: 0.75rem; }
+    .course-badge { padding: 0.25rem 0.45rem; border-radius: 0.35rem; font-size: 0.7rem; }
+
+    /* Contact area compact */
+    .contact-wrapper { grid-template-columns: 1fr; gap: 1rem; }
+    .contact-form { padding: 1rem; border-radius: 0.5rem; }
+    .contact-item { padding: 1rem; border-radius: 0.5rem; }
+    .form-group input, .form-group textarea { padding: 0.6rem; font-size: 0.95rem; }
+
+    /* Location/map */
+    .map-wrapper iframe { height: 240px; }
+
+    /* Footer compact */
+    .footer { padding: 1.25rem 1rem; }
+    .footer-content { gap: 1rem; max-width: 100%; }
+    .footer-section h4 { font-size: 1rem; margin-bottom: 0.5rem; }
+    .footer-bottom p { font-size: 0.85rem; }
+
+    /* Prevent text scaling / overflow on mobile devices */
+    html, body { -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
+    * { max-width: 100%; box-sizing: border-box; }
+}
 .text-center { text-align: center; }
 .text-dark { color: var(--text-dark); }
 .text-light { color: var(--text-light); }
