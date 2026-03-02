@@ -4,33 +4,38 @@
    ======================================== */
 
 // ========================================
-// HAMBURGER MENU TOGGLE
+// HAMBURGER MENU TOGGLE / RESPONSIVE NAV
 // ========================================
 
 const hamburger = document.getElementById('hamburger');
 const navMenu = document.getElementById('navMenu');
 
-if (hamburger) {
-    hamburger.addEventListener('click', () => {
-        hamburger.classList.toggle('active');
-        navMenu.classList.toggle('active');
+function toggleMobileMenu() {
+    const expanded = hamburger.getAttribute('aria-expanded') === 'true';
+    hamburger.setAttribute('aria-expanded', String(!expanded));
+    hamburger.classList.toggle('active');
+    navMenu.classList.toggle('active');
+    document.body.classList.toggle('menu-open');
+}
+
+if (hamburger && navMenu) {
+    hamburger.addEventListener('click', toggleMobileMenu);
+
+    // close when a nav item is clicked (desktop or mobile)
+    document.querySelectorAll('.nav-menu .nav-link, .nav-cta-mobile a').forEach(el => {
+        el.addEventListener('click', () => {
+            if (navMenu.classList.contains('active')) {
+                toggleMobileMenu();
+            }
+        });
     });
 }
 
-// Close menu when a link is clicked
-const navLinks = document.querySelectorAll('.nav-link');
-navLinks.forEach(link => {
-    link.addEventListener('click', () => {
-        hamburger.classList.remove('active');
-        navMenu.classList.remove('active');
-    });
-});
-
 // Close menu when clicking outside
+// use toggleMobileMenu so aria-expanded and body class update
 document.addEventListener('click', (e) => {
-    if (!e.target.closest('.nav-container')) {
-        hamburger.classList.remove('active');
-        navMenu.classList.remove('active');
+    if (navMenu.classList.contains('active') && !e.target.closest('.nav-container')) {
+        toggleMobileMenu();
     }
 });
 
@@ -132,7 +137,6 @@ const initializeCourseFiltering = () => {
         });
     });
 };
-
 document.addEventListener('DOMContentLoaded', initializeCourseFiltering);
 
 // ========================================
@@ -230,9 +234,9 @@ const navbar = document.querySelector('.navbar');
 window.addEventListener('scroll', () => {
     const currentScroll = window.pageYOffset;
     if (currentScroll > 100) {
-        navbar.style.boxShadow = '0 4px 16px rgba(0, 0, 0, 0.12)';
+        navbar.classList.add('scrolled');
     } else {
-        navbar.style.boxShadow = '0 2px 8px rgba(0, 0, 0, 0.1)';
+        navbar.classList.remove('scrolled');
     }
 });
 
@@ -345,31 +349,95 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // ========================================
-// IMAGE PROTECTION (client-side)
-// Lightweight handlers to discourage right-click and drag
-// These are friendly, non-destructive measures — do not
-// rely on them for true DRM; users can still screenshot.
-// Compatible with GitHub Pages (static JS) and any domain.
+// IMAGE & MEDIA PROTECTION (client-side)
+// Lightweight handlers to discourage right-click, drag, and
+// basic download attempts. Users can still screenshot.
 // ========================================
 
 function initializeImageProtection() {
     const imgs = document.querySelectorAll('.image-protect img, img.protected-image');
-    if (!imgs.length) return;
-
     imgs.forEach(img => {
-        img.addEventListener('contextmenu', (e) => { e.preventDefault(); });
-        img.addEventListener('dragstart', (e) => { e.preventDefault(); });
+        img.addEventListener('contextmenu', (e) => e.preventDefault());
+        img.addEventListener('dragstart', (e) => e.preventDefault());
     });
 
-    // capture at document level as a fallback for clicks that land on child elements
     document.addEventListener('contextmenu', (e) => {
-        if (e.target && e.target.closest && e.target.closest('.image-protect')) {
+        if (e.target.closest && e.target.closest('.image-protect')) {
             e.preventDefault();
         }
     }, true);
 }
 
-document.addEventListener('DOMContentLoaded', initializeImageProtection);
+function initializeVideoProtection() {
+    const vids = document.querySelectorAll('video.protected-video');
+    vids.forEach(video => {
+        video.addEventListener('contextmenu', e => e.preventDefault());
+        video.setAttribute('controlsList', 'nodownload');
+        video.setAttribute('disablepictureinpicture', '');
+        video.setAttribute('playsinline', '');
+        // note: blocking direct URL access requires server support
+    });
+}
+
+// disable text selection on .no-select sections
+function initializeNoSelect() {
+    document.querySelectorAll('.no-select').forEach(el => {
+        el.style.userSelect = 'none';
+        el.style.webkitUserSelect = 'none';
+        el.style.msUserSelect = 'none';
+    });
+}
+
+// block common developer hotkeys
+function blockShortcuts(e) {
+    if (e.ctrlKey) {
+        const key = e.key.toLowerCase();
+        if (['u','s'].includes(key) || (e.shiftKey && ['i','c','j'].includes(key))) {
+            e.preventDefault();
+        }
+    }
+    if (e.key === 'F12') e.preventDefault();
+}
+
+// simple email cloaking
+function cloakEmails() {
+    document.querySelectorAll('.cloak-email').forEach(el => {
+        const user = el.dataset.user;
+        const domain = el.dataset.domain;
+        if (user && domain) {
+            el.textContent = `${user}@${domain}`;
+            el.href = `mailto:${user}@${domain}`;
+        }
+    });
+}
+
+// very basic devtools detection
+(function() {
+    const element = new Image();
+    Object.defineProperty(element, 'id', {
+        get: function() {
+            console.warn('DevTools opened');
+        }
+    });
+    console.log(element);
+})();
+
+// prevent basic right-click everywhere except inputs, links, selects
+document.addEventListener('contextmenu', function(e) {
+    const tag = e.target.tagName.toLowerCase();
+    if (!['input','textarea','select','a'].includes(tag)) {
+        e.preventDefault();
+    }
+});
+
+// initialization on DOM ready
+document.addEventListener('DOMContentLoaded', () => {
+    initializeImageProtection();
+    initializeVideoProtection();
+    initializeNoSelect();
+    document.addEventListener('keydown', blockShortcuts);
+    cloakEmails();
+});
 
 // ========================================
 // END OF SCRIPT

@@ -8,6 +8,10 @@
     <meta name="author" content="Beacon Technology Hub">
 
     <title>Beacon Technology Hub - Empowering Minds, Building Future Innovators</title>
+    <!-- Content Security Policy: adjust directives as needed for external resources -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; font-src 'self' https://cdnjs.cloudflare.com;">
+    <!-- Prevent clickjacking -->
+    <meta http-equiv="X-Frame-Options" content="SAMEORIGIN">
     <link rel="stylesheet" href="style.css">
     <link rel="icon" href="assets/images/final_logo.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -18,30 +22,40 @@
     <!-- NAVBAR / HEADER -->
     <nav class="navbar">
         <div class="nav-container">
-            <div class="nav-logo">
-                <span class="logo-icon"></span>
-                Beacon Technology Hub
-            </div>
-            <div class="hamburger" id="hamburger">
-                <span></span>
-                <span></span>
-                <span></span>
-            </div>
+            <!-- left: logo -->
+            <a href="#home" class="nav-logo">
+                <span class="logo-icon" aria-hidden="true"></span>
+                <span class="logo-text">Beacon Technology Hub</span>
+            </a>
+
+            <!-- center: links -->
             <ul class="nav-menu" id="navMenu">
                 <li><a href="#home" class="nav-link">Home</a></li>
-                <li><a href="#mission" class="nav-link">Mission & Vision</a></li>
+                <li><a href="#mission" class="nav-link">Mission &amp; Vision</a></li>
                 <li><a href="#courses" class="nav-link">Courses</a></li>
                 <li><a href="#team" class="nav-link">Our Team</a></li>
                 <li><a href="#projects" class="nav-link">Projects</a></li>
                 <li><a href="#contact" class="nav-link">Contact</a></li>
-                <li><a href="https://roborangers.beacontechnologyhub.in">RoboRangers</a></li>
+                <li><a href="https://roborangers.beacontechnologyhub.in" class="nav-link">RoboRangers</a></li>
+                <!-- mobile-only CTA inside menu -->
+                <li class="nav-cta-mobile"><a href="#contact" class="cta-btn" >Enroll Now</a></li>
             </ul>
-            <a href="#contact" class="cta-btn">Enroll Now</a>
+
+            <!-- right: CTA (desktop) -->
+            <a href="#contact" class="cta-btn nav-cta-desktop">Enroll Now</a>
+
+            <!-- hamburger toggle -->
+            <button class="hamburger" id="hamburger" aria-label="Toggle navigation" aria-controls="navMenu" aria-expanded="false">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
         </div>
     </nav>
 
    <!-- HERO IMAGE SLIDER -->
-<section class="hero-slider">
+<!-- home anchor: target for nav logo and home link -->
+<section id="home" class="hero-slider">
   <div class="slides">
     <div class="slide active" style="background-image:url('assets/images/slide1.jpeg')"></div>
     <div class="slide" style="background-image:url('assets/images/slide2.png')"></div>
@@ -523,7 +537,7 @@
                     </div>
                     <div class="contact-item">
                         <h4>Email</h4>
-                        <p><a href="mailto:beacontechnologyhub@gmail.com">beacontechnologyhub@gmail.com</a></p>
+                        <p><a class="cloak-email" data-user="beacontechnologyhub" data-domain="gmail.com" href="#">[email protected]</a></p>
                     </div>
                     <div class="contact-item">
                         <h4>Location</h4>
@@ -541,6 +555,7 @@
                 <div class="footer-section">
                     <h4>Beacon Technology Hub</h4>
                     <p>Empowering Minds, Building Future Innovators through quality education.</p>
+                    <br> <a href="roborangers.html"><h4>RoboRangers Info</h4></a>
                 </div>
                 <div class="footer-section">
                     <h4>Quick Links</h4>
@@ -567,9 +582,8 @@
                             <i class="fab fa-youtube"></i>
                         </a>
 
-                        <a href="https://wa.me/916203991985" target="_blank" style="display: flex; align-items: center; gap: 8px; text-decoration: none;">
-                            <img src="assets/icons/whatsapp.jpg " width="25" height="30">
-                            <span>Chat With Us on WhatsApp</span>
+                        <a href="https://wa.me/916203991985" class="social-link" aria-label="WhatsApp">
+                            <i class="fab fa-whatsapp"></i>
                         </a>
 
                     </div>
@@ -582,6 +596,19 @@
     </footer>
 
     <script src="script.js"></script>
+
+    <!--
+        PROTECTION GUIDELINES (front-end only):
+        * Add class "image-protect" around any <img> you want to deter users from downloading.
+        * Add class "protected-video" to <video> tags; the JS will hide right-click and download controls.
+        * Use the .no-select utility on any text blocks you wish to make non-selectable.
+        * Watermarks: place a <span class="watermark">Your Watermark</span> inside a relative container.
+        * Cloak email addresses using <a class="cloak-email" data-user="name" data-domain="domain.com"></a>.
+        * CSP meta above helps guard against XSS; for real projects set headers on the server.
+        * X-Frame-Options header is also recommended (shown above).
+        * Videos should ideally be streamed/signed from a CDN; frontend alone can't block URL access.
+        * Protect forms on server-side with rate limiting / validation.
+        * Always serve over HTTPS and enable HSTS on your host.
+    -->
 </body>
 </html>
-
