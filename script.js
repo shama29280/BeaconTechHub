@@ -423,8 +423,15 @@ function cloakEmails() {
 })();
 
 // prevent basic right-click everywhere except inputs, links, selects
+// map iframe should be interactable so users can copy address or use map features
 document.addEventListener('contextmenu', function(e) {
     const tag = e.target.tagName.toLowerCase();
+
+    // if right-click occurs inside the map wrapper or on an iframe, allow it
+    if (e.target.closest && (e.target.closest('.map-wrapper') || tag === 'iframe')) {
+        return; // do not block context menu here
+    }
+
     if (!['input','textarea','select','a'].includes(tag)) {
         e.preventDefault();
     }
