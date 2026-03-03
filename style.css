@@ -903,10 +903,18 @@ body {
 
 .team-grid {
     display: grid;
+    /* default behavior: responsive grid with at least 280px per card */
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     gap: 2.5rem;
     max-width: 1200px;
     margin: 0 auto;
+}
+
+/* force exactly three columns on larger screens */
+@media (min-width: 1024px) {
+    .team-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
 }
 
 .team-card {
@@ -1231,7 +1239,105 @@ body {
     display: block;
 }
 
+/* highlighted NIMCET course banner */
+.nimcet-highlight {
+    /* bright glowing yellow/orange gradient with pulse animation */
+    background: radial-gradient(circle at top left, #ffea00, #ff8f00);
+    color: var(--text-dark);
+    position: relative;
+    padding: 1.5rem 1rem;          /* smaller box */
+    border-radius: var(--radius-md);
+    border: 2px solid #ffea00;
+    box-shadow: 0 0 20px #ffea00, 0 0 40px #ff8f00;
+    overflow: hidden;
+    animation: nimcet-glow 2.5s infinite alternate, fadeInUp 0.8s ease-out forwards;
+    margin: 0 auto 1.5rem;         /* center with small bottom margin */
+    max-width: 800px;              /* limit width for a compact box */
+}
+
+/* decorative glow shape behind the section */
+.nimcet-highlight::before {
+    content: '';
+    position: absolute;
+    top: -15px;
+    left: -15px;
+    width: calc(100% + 30px);
+    height: calc(100% + 30px);
+    background: rgba(255,234,0,0.15);
+    border-radius: var(--radius-lg);
+    z-index: -1;
+    animation: nimcet-glow 2.5s infinite alternate;
+}
+.nimcet-highlight .nimcet-badge {
+    position: absolute;
+    top: 0.75rem;
+    right: 0.75rem;
+    background: #ff4757;
+    color: #fff;
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    text-transform: uppercase;
+    box-shadow: 0 0 8px rgba(255,71,87,0.6);
+}
+.nimcet-content h1 {
+    font-size: clamp(1.5rem, 5vw, 2.5rem);
+    margin-bottom: 0.5rem;
+    color: #ff1010;                /* orangish text highlight */
+    text-shadow: 0 0 4px #ff8f00, 0 0 8px #ffea00;
+}
+.nimcet-content h2 {
+    font-size: clamp(1.2rem, 4vw, 2rem);
+    margin-bottom: 1rem;
+    font-weight: 400;
+    opacity: 0.9;
+}
+.nimcet-features {
+    list-style: disc inside;
+    margin: 0 0 1rem;
+    padding: 0;
+}
+.nimcet-features li {
+    margin-bottom: 0.5rem;
+}
+.nimcet-note {
+    font-weight: 600;
+    padding: 0.5rem;
+    background: rgba(202, 18, 18, 0.2);
+    border-radius: 4px;
+    display: inline-block;
+    color: red;
+}
+
 @media (max-width: 768px) {
+    .nimcet-highlight {
+        padding: 1.5rem 0.75rem;
+    }
+    .nimcet-content h1 {
+        font-size: 1.6rem;
+    }
+    .nimcet-content h2 {
+        font-size: 1.25rem;
+    }
+}
+
+/* keyframes for glowing / scaling effect on NIMCET highlight */
+@keyframes nimcet-glow {
+    0% {
+        box-shadow: 0 0 10px #ffea00, 0 0 20px #ff8f00;
+        transform: scale(1);
+    }
+    100% {
+        box-shadow: 0 0 20px #ffea00, 0 0 40px #ff8f00;
+        transform: scale(1.02);
+    }
+}
+
+@media (max-width: 768px) {
+    /* slower glow animation on small screens */
+    .nimcet-highlight { animation-duration: 3.5s, 0.8s; }
+
     /* responsive variable overrides */
     :root {
         --fade-distance: 16px;

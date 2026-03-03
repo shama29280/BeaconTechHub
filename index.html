@@ -10,7 +10,8 @@
     <title>Beacon Technology Hub - Empowering Minds, Building Future Innovators</title>
     <!-- Content Security Policy: adjust directives as needed for external resources -->
     <!-- allow Google Maps iframe; you may include additional domains (maps.googleapis.com, maps.gstatic.com) if needed -->
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self' https://www.google.com; frame-src https://www.google.com https://maps.googleapis.com https://maps.gstatic.com; img-src 'self' data:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; font-src 'self' https://cdnjs.cloudflare.com;">
+    <!-- permit Formspree for contact form (both form submissions and fetch requests) -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' https://www.google.com https://formspree.io; connect-src 'self' https://formspree.io https://www.google.com; form-action 'self' https://formspree.io; frame-src https://www.google.com https://maps.googleapis.com https://maps.gstatic.com; img-src 'self' data:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; font-src 'self' https://cdnjs.cloudflare.com;">
     <!-- Prevent clickjacking -->
     <meta http-equiv="X-Frame-Options" content="SAMEORIGIN">
     <link rel="stylesheet" href="style.css">
@@ -139,6 +140,26 @@
                         <li>Contribute to India's technological and social development</li>
                     </ul>
                 </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- NIMCET HIGHLIGHTED SECTION -->
+    <section id="nimcet" class="nimcet-highlight" aria-label="NIMCET Coaching - NIT MCA Entrance Preparation">
+        <div class="container">
+            <div class="nimcet-content">
+                <div class="nimcet-badge">NEW</div>
+                <h1>NIMCET 2026 Preparation – Crack NIT MCA Entrance</h1>
+                <h2>Gateway to Top National Institutes of Technology (NITs)</h2>
+                <ul class="nimcet-features">
+                    <li>Advanced Mathematics Preparation</li>
+                    <li>Logical Reasoning Mastery</li>
+                    <li>Computer Awareness Concepts</li>
+                    <li>Previous Year Question Practice</li>
+                    <li>Mock Test Series</li>
+                    <li>Personal Mentorship &amp; Doubt Support</li>
+                </ul>
+                <p class="nimcet-note">Limited Seats Available – New Batch Starting Soon</p>
             </div>
         </div>
     </section>
@@ -515,7 +536,8 @@
             <h2 class="section-title">Get In Touch</h2>
             <div class="contact-wrapper">
                 <div class="contact-form">
-                    <form id="contactForm" action="https://formspree.io/f/meelkeyz" method="POST">
+                    <!-- Using JavaScript fetch for Formspree, action removed to avoid double-posts -->
+                    <form id="contactForm" method="POST">
                         <div class="form-group">
                             <label for="name">Full Name</label>
                             <input type="text" id="name" name="name" required placeholder="Your Name">

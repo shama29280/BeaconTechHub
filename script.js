@@ -144,6 +144,10 @@ document.addEventListener('DOMContentLoaded', initializeCourseFiltering);
 // ========================================
 
 const initializeFormspreeForm = () => {
+    // guard against multiple initializations (e.g. script loaded twice)
+    if (window.__formspreeInitDone) return;
+    window.__formspreeInitDone = true;
+
     const contactForm = document.getElementById('contactForm');
 
     if (!contactForm) return;
@@ -161,23 +165,38 @@ const initializeFormspreeForm = () => {
         msg.classList.add(type, 'is-visible');
     };
 
-    contactForm.addEventListener('submit', async (e) => {
+    // prevent duplicate submission via dataset flag
+    contactForm.addEventListener('submit', async function handleSubmit(e) {
         e.preventDefault();
-        const formContainer = contactForm.closest('.contact-form') || contactForm.parentElement;
+        console.log('contact form submit handler triggered');
+
+        if (contactForm.dataset.submitting === 'true') {
+            console.log('submission blocked: already submitting');
+            return;
+        }
+        contactForm.dataset.submitting = 'true';
 
         const submitBtn = contactForm.querySelector('[type="submit"]');
-        if (submitBtn) submitBtn.classList.add('loading');
+        if (submitBtn) {
+            submitBtn.classList.add('loading');
+            submitBtn.disabled = true; // disable to prevent double-clicks
+        }
 
+        const formContainer = contactForm.closest('.contact-form') || contactForm.parentElement;
         const formData = new FormData(contactForm);
 
+        // use hard-coded URL or data attribute so action attr isn't required
+        const endpoint = 'https://formspree.io/f/meelkeyz';
+
         try {
-            const response = await fetch(contactForm.action, {
+            const response = await fetch(endpoint, {
                 method: 'POST',
                 headers: {
                     'Accept': 'application/json'
                 },
                 body: formData
             });
+            console.log('fetch completed, status:', response.status);
 
             if (response.ok) {
                 showFormMessage(formContainer, 'Thanks! Your message was sent successfully. We will contact you soon.', 'success');
@@ -188,9 +207,14 @@ const initializeFormspreeForm = () => {
                 showFormMessage(formContainer, errMsg, 'error');
             }
         } catch (err) {
+            console.log('fetch error', err);
             showFormMessage(formContainer, 'Network error — please check your connection and try again.', 'error');
         } finally {
-            if (submitBtn) submitBtn.classList.remove('loading');
+            if (submitBtn) {
+                submitBtn.classList.remove('loading');
+                submitBtn.disabled = false;
+            }
+            contactForm.dataset.submitting = 'false';
         }
     });
 };
