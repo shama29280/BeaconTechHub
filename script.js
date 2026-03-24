@@ -103,41 +103,57 @@ const animateCounters = () => {
 document.addEventListener('DOMContentLoaded', animateCounters);
 
 // ========================================
-// COURSE FILTERING
+// COURSE FILTERING (CLICK TO SHOW ONLY)
 // ========================================
 
 const initializeCourseFiltering = () => {
     const filterButtons = document.querySelectorAll('.filter-btn');
     const courseCards = document.querySelectorAll('.course-card');
 
+    // 👉 HIDE ALL COURSES INITIALLY
+    courseCards.forEach(card => {
+        card.style.display = 'none';
+        card.style.opacity = '0';
+    });
+
     filterButtons.forEach(button => {
         button.addEventListener('click', () => {
+
+            // Active button UI
             filterButtons.forEach(btn => btn.classList.remove('active'));
             button.classList.add('active');
-            
+
             const filterValue = button.getAttribute('data-filter');
 
             courseCards.forEach(card => {
+
                 if (filterValue === 'all') {
-                    card.classList.remove('hide');
                     card.style.display = 'block';
-                    setTimeout(() => { card.style.opacity = '1'; }, 10);
-                } else {
-                    if (card.getAttribute('data-category') === filterValue) {
-                        card.classList.remove('hide');
-                        card.style.display = 'block';
-                        setTimeout(() => { card.style.opacity = '1'; }, 10);
-                    } else {
-                        card.classList.add('hide');
-                        card.style.opacity = '0';
-                        setTimeout(() => { card.style.display = 'none'; }, 300);
-                    }
+                    setTimeout(() => {
+                        card.style.opacity = '1';
+                    }, 10);
+                } 
+                else if (card.getAttribute('data-category') === filterValue) {
+                    card.style.display = 'block';
+                    setTimeout(() => {
+                        card.style.opacity = '1';
+                    }, 10);
+                } 
+                else {
+                    card.style.opacity = '0';
+                    setTimeout(() => {
+                        card.style.display = 'none';
+                    }, 200);
                 }
+
             });
+
         });
     });
 };
+
 document.addEventListener('DOMContentLoaded', initializeCourseFiltering);
+
 
 // ========================================
 // FORMSPREE CONTACT FORM (NO LOCAL SERVER)
